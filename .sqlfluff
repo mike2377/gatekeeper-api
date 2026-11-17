@@ -2,6 +2,7 @@
 dialect = postgres
 templater = raw
 max_line_length = 140
+exclude_rules = L003, L009
 
 [sqlfluff:indentation]
 indent_unit = space
