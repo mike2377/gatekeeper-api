@@ -1,6 +1,7 @@
 import express from 'express'
-import { pool } from './db.js'
-import { errorHandler } from './middleware/errorHandler.js'
+import { pool } from '#src/db.js'
+import { errorHandler } from '#src/middleware/errorHandler.js'
+import { eventsRouter } from '#src/routes/events.js'
 
 export function createApp () {
   const app = express()
@@ -17,7 +18,10 @@ export function createApp () {
     }
   })
 
-  // route
+  // routes
+  app.use('/events', eventsRouter)
+
+  // root route
   app.get('/', (req, res) => {
     res.json({ name: 'Gatekeeper API', status: 'running', docs: '/docs' })
   })
