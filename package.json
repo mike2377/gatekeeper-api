@@ -17,8 +17,8 @@
     "lint:fix": "ESLINT_USE_FLAT_CONFIG=true eslint . --config eslint.local.config.js --fix",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "seed": "node src/db/seed.js",
-    "db:setup": "node src/db/setup.js"
+    "seed": "node scripts/seed.js",
+    "db:setup": "node scripts/db-setup.js"
   },
   "keywords": [],
   "dependencies": {
