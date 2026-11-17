@@ -22,12 +22,17 @@ export default [
     rules: {
       'no-unused-vars': [
         'error',
-        {
-          argsIgnorePattern: '^_',
-          varsIgnorePattern: '^_'
-        }
+        { argsIgnorePattern: '^_', varsIgnorePattern: '^_' }
       ],
-      'no-console': ['warn', { allow: ['warn', 'error'] }]
+      'no-console': ['warn', { allow: ['warn', 'error'] }],
+      'space-before-function-paren': [
+        'error',
+        {
+          anonymous: 'always',
+          named: 'always',
+          asyncArrow: 'always'
+        }
+      ]
     }
   },
   prettier

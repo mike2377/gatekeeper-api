@@ -11,13 +11,13 @@ export function createApp () {
     try {
       await pool.query('SELECT 1')
       res.json({ status: 'ok', database: 'ok' })
-    } catch {
-      console.error('DB ERROR:', err.message)
+    } catch (err) {
+      console.error('DB ERROR:', err)
       res.status(503).json({ status: 'error', database: 'unreachable' })
     }
   })
 
-  // Root route (helpful for reviewers)
+  // route
   app.get('/', (req, res) => {
     res.json({ name: 'Gatekeeper API', status: 'running', docs: '/docs' })
   })
