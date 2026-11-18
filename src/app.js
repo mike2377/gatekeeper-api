@@ -2,6 +2,7 @@ import express from 'express'
 import { pool } from '#src/db.js'
 import { errorHandler } from '#src/middleware/errorHandler.js'
 import { eventsRouter } from '#src/routes/events.js'
+import { bookingsRouter, eventBookingsRouter } from '#src/routes/bookings.js'
 
 export function createApp () {
   const app = express()
@@ -19,7 +20,9 @@ export function createApp () {
   })
 
   // routes
+  app.use('/events/:id/bookings', eventBookingsRouter)
   app.use('/events', eventsRouter)
+  app.use('/bookings', bookingsRouter)
 
   // root route
   app.get('/', (req, res) => {
