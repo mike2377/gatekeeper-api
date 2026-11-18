@@ -6,8 +6,28 @@ info:
   description: Event ticketing and transactional booking API
 servers:
   - url: /
-    description: Local development
+    description: Current host
 paths:
+  /health:
+    get:
+      summary: Health check
+      description: Checks if the API and database are reachable.
+      responses:
+        '200':
+          description: App and database are OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: ok
+                  database:
+                    type: string
+                    example: ok
+        '503':
+          description: Database unreachable
   /events:
     post:
       summary: Create a new event
@@ -28,7 +48,7 @@ paths:
                   example: Concert
                 venue:
                   type: string
-                  example: Douala
+                  example: Paris
                 starts_at:
                   type: string
                   format: date-time
