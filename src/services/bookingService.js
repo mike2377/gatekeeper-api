@@ -32,7 +32,7 @@ export async function createBooking ({ eventId, customerId, quantity }) {
     return insertRes.rows[0]
   } catch (err) {
     await client.query('ROLLBACK')
-      
+
     // Gestion des erreurs de clés étrangères (Foreign Key)
     if (err.code === '23503') {
       if (err.constraint === 'bookings_event_id_fkey') {
@@ -42,7 +42,7 @@ export async function createBooking ({ eventId, customerId, quantity }) {
         throw new BadRequestError('Unknown customer') // 400
       }
     }
-      
+
     throw err
   } finally {
     client.release()
@@ -65,7 +65,7 @@ export async function cancelBooking (bookingId) {
     if (updateRes.rowCount === 0) {
       // If 0 rows updated, check if it's because it doesn't exist OR cancelled
       const checkRes = await client.query('SELECT status FROM bookings WHERE id = $1', [bookingId])
-      
+
       if (checkRes.rowCount === 0) {
         throw new NotFoundError('Booking not found') // 404
       } else {
@@ -75,10 +75,7 @@ export async function cancelBooking (bookingId) {
 
     const { event_id: eventId, quantity } = updateRes.rows[0]
 
-    await client.query(
-      `UPDATE events SET seats_remaining = seats_remaining + $1 WHERE id = $2`,
-      [quantity, eventId]
-    )
+    await client.query('UPDATE events SET seats_remaining = seats_remaining + $1 WHERE id = $2', [quantity, eventId])
 
     await client.query('COMMIT')
   } catch (err) {

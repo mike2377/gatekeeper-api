@@ -69,8 +69,8 @@ This is achieved using a **single-statement atomic conditional decrement** insid
 
 ```sql
 BEGIN;
-UPDATE events 
-SET seats_remaining = seats_remaining - $qty 
+UPDATE events
+SET seats_remaining = seats_remaining - $qty
 WHERE id = $id AND seats_remaining >= $qty AND status = 'on_sale';
 -- rowCount = 0 -> throw 409 Conflict -> ROLLBACK
 INSERT INTO bookings (event_id, customer_id, quantity) VALUES ($id, $cust, $qty);
@@ -93,7 +93,7 @@ gatekeeper-api/
 ├── .github/
 │   └── workflows/
 │       └── linter.yml
-├── images/                    
+├── images/
 ├── scripts/
 │   ├── db-setup.js
 │   └── seed.js
@@ -141,7 +141,7 @@ gatekeeper-api/
 - **API URL**: [https://gatekeeper-api-lvcg.onrender.com](https://gatekeeper-api-lvcg.onrender.com)
 - **Swagger UI**: [https://gatekeeper-api-lvcg.onrender.com/docs](https://gatekeeper-api-lvcg.onrender.com/docs)
 
-> *Hosted on Render's free tier: the first request may take 30-60s (cold start).*
+> _Hosted on Render's free tier: the first request may take 30-60s (cold start)._
 
 ---
 
@@ -151,8 +151,8 @@ gatekeeper-api/
 
 ### POST /events (Create)
 
-| Request | Response |
-| :---: | :---: |
+|                Request                 |                  Response                   |
+| :------------------------------------: | :-----------------------------------------: |
 | ![POST /events](images/post-event.png) | ![Response](images/response-post-event.png) |
 
 ### GET /events/{id} (Fetch)
@@ -200,14 +200,14 @@ Swagger UI: `http://localhost:3000/docs`
 
 ### Useful Scripts
 
-| Command | Description |
-| --- | --- |
-| `npm run dev` | Start server with `--watch` |
-| `npm start` | Start server |
-| `npm test` | Run all tests against `gatekeeper_test` |
-| `npm run lint` | Run ESLint |
-| `npm run db:setup` | Apply `schema.sql` to the DB |
-| `npm run seed` | Insert demo customers and events |
+| Command            | Description                             |
+| ------------------ | --------------------------------------- |
+| `npm run dev`      | Start server with `--watch`             |
+| `npm start`        | Start server                            |
+| `npm test`         | Run all tests against `gatekeeper_test` |
+| `npm run lint`     | Run ESLint                              |
+| `npm run db:setup` | Apply `schema.sql` to the DB            |
+| `npm run seed`     | Insert demo customers and events        |
 
 ---
 

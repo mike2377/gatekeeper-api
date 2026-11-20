@@ -43,13 +43,16 @@ test('POST /events/:id/bookings creates a booking and decrements seats', async (
 test('Rollback: unknown customer triggers rollback, seats remain unchanged', async () => {
   // create a real event with 10 seats
   const eventRes = await request(app).post('/events').send({
-    name: 'Rollback Event', venue: 'Paris', starts_at: '2026-12-01T20:00:00Z', capacity: 10
+    name: 'Rollback Event',
+    venue: 'Paris',
+    starts_at: '2026-12-01T20:00:00Z',
+    capacity: 10
   })
   const eventId = eventRes.body.id
 
   // try to book with an unknown customer_id (9999)
   const res = await request(app).post(`/events/${eventId}/bookings`).send({
-    customer_id: 9999, 
+    customer_id: 9999,
     quantity: 2
   })
 
