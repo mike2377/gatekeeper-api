@@ -24,8 +24,6 @@ This project aims to:
 
 - `POST /events` with `{ name, venue, starts_at, capacity }`
 - Returns **201 Created** with `seats_remaining` initialized to `capacity`
-- **409 Conflict** safeguards against invalid states
-- Input validation blocks negative capacities or malformed dates
 
 ### Transactional Booking (No Overselling)
 
@@ -250,9 +248,8 @@ Implementing pagination using `OFFSET` degrades performance. Keyset pagination r
 - Writing **single-statement SQL** for atomic operations instead of relying on application-level locking.
 - Understanding **PostgreSQL row-level locking** and transaction isolation.
 - Implementing **`BEGIN / COMMIT / ROLLBACK`** correctly using a pooled client (and releasing it in `finally`).
-- Using **Zod** to parse and refine inputs, including cross-field validations (like `quantity` between 1 and 10).
+- Using **Zod** to strictly validate inputs (e.g., ensuring `quantity` is an integer between 1 and 10, and `:id` params are positive integers)
 - Writing **`Promise.all`** concurrency tests to simulate real-world high-load scenarios.
-- Designing a **REST API** with a strict focus on status codes (`409 Conflict` for sold out, `204 No Content` for cancel).
 
 ---
 
@@ -261,6 +258,6 @@ Implementing pagination using `OFFSET` degrades performance. Keyset pagination r
 **Kembou Keumoe Ivan Michael**
 Junior Fullstack Developer
 
-📧 Email: [kman39457@email.com](mailto:kman39457@email.com)
+📧 Email: [kman39457@gmail.com](mailto:kman39457@gmail.com)
 🌍 Based in Cameroon | Open to remote opportunities
 🔗 GitHub: [github.com/mike2377](https://github.com/mike2377)
