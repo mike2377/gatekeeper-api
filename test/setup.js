@@ -1,3 +1,7 @@
+if (process.env.NODE_ENV !== 'test' || !process.env.TEST_DATABASE_URL) {
+  throw new Error('Tests require NODE_ENV=test and TEST_DATABASE_URL to be set.')
+}
+
 import { readFile } from 'node:fs/promises'
 import { fileURLToPath } from 'node:url'
 import path from 'node:path'

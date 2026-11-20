@@ -40,14 +40,26 @@ test('POST /events/:id/bookings creates a booking and decrements seats', async (
   assert.equal(checkEvent.body.seats_remaining, 8)
 })
 
-test('Rollback: booking fails if event does not exist, seats are not changed', async () => {
-  const customerRes = await pool.query("INSERT INTO customers (full_name, email) VALUES ('Bob', 'bob@test.com') RETURNING id")
-  const customerId = customerRes.rows[0].id
+test('Rollback: unknown customer triggers rollback, seats remain unchanged', async () => {
+  // create a real event with 10 seats
+  const eventRes = await request(app).post('/events').send({
+    name: 'Rollback Event', venue: 'Paris', starts_at: '2026-12-01T20:00:00Z', capacity: 10
+  })
+  const eventId = eventRes.body.id
 
-  // Try to book for event 999 (which doesn't exist)
-  // Or 404 depending on how you handle it, here the UPDATE returns 0 rows = 409
-  const res = await request(app).post('/events/999/bookings').send({ customer_id: customerId, quantity: 1 })
-  assert.equal(res.status, 409)
+  // try to book with an unknown customer_id (9999)
+  const res = await request(app).post(`/events/${eventId}/bookings`).send({
+    customer_id: 9999, 
+    quantity: 2
+  })
+
+  // asert it fails with 400 Bad Request
+  assert.equal(res.status, 400)
+  assert.equal(res.body.message, 'Unknown customer')
+
+  // proove the ROLLBACK: seats_remaining must still be 10 (not 8)
+  const checkEvent = await request(app).get(`/events/${eventId}`)
+  assert.equal(checkEvent.body.seats_remaining, 10)
 })
 
 test('POST /bookings/:id/cancel cancels and restores seats', async () => {

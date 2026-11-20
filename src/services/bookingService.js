@@ -1,5 +1,5 @@
 import { pool } from '#src/db.js'
-import { ConflictError, BadRequestError } from '#src/utils/errors.js'
+import { NotFoundError, ConflictError, BadRequestError } from '#src/utils/errors.js'
 
 export async function createBooking ({ eventId, customerId, quantity }) {
   const client = await pool.connect()
@@ -32,10 +32,17 @@ export async function createBooking ({ eventId, customerId, quantity }) {
     return insertRes.rows[0]
   } catch (err) {
     await client.query('ROLLBACK')
-    // handle foreign key violation
+      
+    // Gestion des erreurs de clés étrangères (Foreign Key)
     if (err.code === '23503') {
-      throw new BadRequestError('Unknown customer')
+      if (err.constraint === 'bookings_event_id_fkey') {
+        throw new NotFoundError('Event not found') // 404
+      }
+      if (err.constraint === 'bookings_customer_id_fkey') {
+        throw new BadRequestError('Unknown customer') // 400
+      }
     }
+      
     throw err
   } finally {
     client.release()
@@ -47,7 +54,6 @@ export async function cancelBooking (bookingId) {
   try {
     await client.query('BEGIN')
 
-    // Update booking status to 'cancelled'
     const updateRes = await client.query(
       `UPDATE bookings
        SET status = 'cancelled'
@@ -56,19 +62,21 @@ export async function cancelBooking (bookingId) {
       [bookingId]
     )
 
-    // If no rows were updated, the booking doesn't exist or already cancelled
     if (updateRes.rowCount === 0) {
-      await client.query('ROLLBACK')
-      throw new ConflictError('Booking already cancelled or not found')
+      // If 0 rows updated, check if it's because it doesn't exist OR cancelled
+      const checkRes = await client.query('SELECT status FROM bookings WHERE id = $1', [bookingId])
+      
+      if (checkRes.rowCount === 0) {
+        throw new NotFoundError('Booking not found') // 404
+      } else {
+        throw new ConflictError('Booking already cancelled') // 409
+      }
     }
 
     const { event_id: eventId, quantity } = updateRes.rows[0]
 
-    // restore seats
     await client.query(
-      `UPDATE events
-       SET seats_remaining = seats_remaining + $1
-       WHERE id = $2`,
+      `UPDATE events SET seats_remaining = seats_remaining + $1 WHERE id = $2`,
       [quantity, eventId]
     )
 

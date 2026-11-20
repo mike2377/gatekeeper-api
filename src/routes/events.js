@@ -1,4 +1,5 @@
 import { Router } from 'express'
+import { z } from 'zod'
 import { createEventSchema, eventQuerySchema } from '#src/schemas/eventSchemas.js'
 import { createEvent, getEventById, listEvents } from '#src/services/eventService.js'
 import { NotFoundError } from '#src/utils/errors.js'
@@ -25,11 +26,7 @@ eventsRouter.get('/', async (req, res) => {
 })
 
 eventsRouter.get('/:id', async (req, res) => {
-  const id = parseInt(req.params.id, 10)
-
-  if (isNaN(id)) {
-    throw new NotFoundError('Event not found')
-  }
+  const id = z.coerce.number().int().positive().parse(req.params.id)
 
   const event = await getEventById(id)
 

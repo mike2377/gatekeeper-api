@@ -1,4 +1,5 @@
 import { Router } from 'express'
+import { z } from 'zod'
 import { createBookingSchema, bookingQuerySchema } from '#src/schemas/bookingSchemas.js'
 import { createBooking, cancelBooking, getBookingById, listBookingsForEvent } from '#src/services/bookingService.js'
 import { getEventById } from '#src/services/eventService.js'
@@ -48,8 +49,7 @@ bookingsRouter.get('/:id', async (req, res) => {
 })
 
 bookingsRouter.post('/:id/cancel', async (req, res) => {
-  const id = parseInt(req.params.id, 10)
-  if (isNaN(id)) throw new NotFoundError('Booking not found')
+  const id = z.coerce.number().int().positive().parse(req.params.id)
 
   await cancelBooking(id)
   res.status(204).end()
